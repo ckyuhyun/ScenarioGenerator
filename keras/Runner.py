@@ -1,10 +1,14 @@
-import Model
+from tf_agents.environments import utils
+
 import Environment
 
 
 def main():
     env = Environment.AutoScenarioEnv()
-    time_spec = env.reset()
+    env.reset()
+    utils.validate_py_environment(env)
+
+
 
 if __name__ == "__main__":
     main()
