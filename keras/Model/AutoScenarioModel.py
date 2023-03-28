@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tf_agents.networks import network
 
 
 class AutoScenarioModel(tf.keras.Model):
