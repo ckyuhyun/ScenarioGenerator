@@ -35,7 +35,15 @@ class ClassificationGraphy:
         _key = random.choices(keys)[0]
         near_nodes = self._data.loc[self._data[self._data.columns[0]] == _key, self._data.columns[1]]
         coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
-        center_x, center_y = coordinate[0]
+
+        try:
+            center_x, center_y = coordinate[0]
+        except:
+            _key = random.choices(keys)[0]
+            near_nodes = self._data.loc[self._data[self._data.columns[0]] == _key, self._data.columns[1]]
+            coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
+
+            center_x, center_y = coordinate[0]
 
 
         for i in range(0, 10):
