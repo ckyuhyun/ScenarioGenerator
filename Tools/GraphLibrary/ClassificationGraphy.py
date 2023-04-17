@@ -21,47 +21,43 @@ class ClassificationGraphy:
         self.base_node = {}
         self.init()
 
+        self.generate_relation_coordinate()
+        self.keys = []
+        for _key in self.coordinates.keys():
+            self.keys.append(_key)
+
     def init(self):
         self.generate_relation_coordinate()
         # self.base_node = self.coordinates.keys()[0]
 
-    def Run(self):
-        self.generate_relation_coordinate()
-        keys = []
-        for _key in self.coordinates.keys():
-            keys.append(_key)
+    def Run(self, center_point, neighbour_points, next_point):
 
         # first start
-        _key = random.choices(keys)[0]
+        _key = center_point
         near_nodes = self._data.loc[self._data[self._data.columns[0]] == _key, self._data.columns[1]]
-        coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
+        coordinate = [self.coordinates[node_key] for node_key in neighbour_points]
 
         try:
-            center_x, center_y = coordinate[0]
+            center_x, center_y = self.coordinates[_key]
         except:
-            _key = random.choices(keys)[0]
-            near_nodes = self._data.loc[self._data[self._data.columns[0]] == _key, self._data.columns[1]]
-            coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
+            raise Exception("This key({0}) doesn't have coordinates ".format(_key))
 
-            center_x, center_y = coordinate[0]
+        # Drawing
+        self.draw(center_x,
+                  center_y,
+                  np.array(coordinate)[:, :1],
+                  np.array(coordinate)[:, 1:2],
+                  self._x_label,
+                  self._y_label)
 
-
-        for i in range(0, 10):
-            self.draw(center_x,
-                      center_y,
-                      np.array(coordinate)[1:, :1],
-                      np.array(coordinate)[1:, 1:2],
-                      self._x_label,
-                      self._y_label)
-
-            _key = random.choice(list(near_nodes.values))
-            coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
-            random_index = random.randint(0, len(near_nodes.values) - 1)
-
-            try:
-                center_x, center_y = coordinate[random_index]
-            except IndexError as e:
-                print("Error - {0} : {1} - {2}".format(str(e), random_index, len(coordinate)))
+        # #_key = neighbour_points
+        # coordinate = [self.coordinates[node_key] for node_key in near_nodes.values]
+        # random_index = random.randint(0, len(near_nodes.values) - 1)
+        #
+        # try:
+        #     center_x, center_y = coordinate[random_index]
+        # except IndexError as e:
+        #     print("Error - {0} : {1} - {2}".format(str(e), random_index, len(coordinate)))
 
 
     def draw(self, center_x, center_y, x_coorindates, y_coordinates, x_label, y_label):
