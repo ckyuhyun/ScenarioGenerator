@@ -12,6 +12,11 @@ This class draws circles representing a node and a classification where has node
 
 class ClassificationGraphy:
     def __init__(self, data: pd.DataFrame, x_label, y_label):
+        """
+        :param data:
+        :param x_label: X label for graphy
+        :param y_label: Y label for graphy
+        """
         self.axis_width = 100
         self.axis_height = 100
         self._data = data
@@ -75,15 +80,11 @@ class ClassificationGraphy:
         plt.show(block=False)
         plt.pause(2)
 
-
-
-
-
-    '''
-    Generate coordinates for each action 
-    '''
-
     def generate_relation_coordinate(self):
+        """
+        Generate coordinates for each action
+        :return:
+        """
         _data = np.concatenate((self._data[self._data.columns[0]].values, self._data[self._data.columns[1]].values))
         for _d in _data:
             if _d not in self.coordinates.keys():
