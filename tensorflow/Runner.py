@@ -5,14 +5,14 @@ from data_preprocessing import data_preprocessing
 
 def run():
     _data_preprocessing = data_preprocessing()
-    _data_preprocessing.data_merge()
+    _data_preprocessing.init()
     _data = _data_preprocessing.get_src_data()
 
     graphy = ClassificationGraphy.ClassificationGraphy(data=_data[['ActionId', 'Next']],
                                                        x_label="Current Action",
                                                        y_label="Next Action")
     class_graphy = graphy
-    action_id = _data_preprocessing.start_entry_id
+    action_id = _data_preprocessing.get_start_entry()
     neighbour_nodes = _data_preprocessing.get_current_neighbor_nodes(action_id)
 
     while True:

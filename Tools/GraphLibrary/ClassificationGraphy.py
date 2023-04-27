@@ -64,7 +64,6 @@ class ClassificationGraphy:
         # except IndexError as e:
         #     print("Error - {0} : {1} - {2}".format(str(e), random_index, len(coordinate)))
 
-
     def draw(self, center_x, center_y, x_coorindates, y_coordinates, x_label, y_label):
         plt.clf()
         plt.scatter(x_coorindates, y_coordinates, alpha=0.3)
