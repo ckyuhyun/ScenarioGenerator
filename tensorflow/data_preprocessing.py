@@ -46,21 +46,42 @@ class data_preprocessing:
         self.__data_merge()
 
     def __data_merge(self):
+        action_id_page = []
+        action_id_name = []
+        next_action_page = []
+        next_action_name = []
+
         #_action_detail_data = self.__action_page_data[["ActionGuid", "Page", "ActionName"]]
+
+        #self.data.columns = ["ActionId", "ActionIdPage", "ActionIdName", "Next", "NextPage", "NextActionName", "distance", "rating"]
+
         merged_data = pd.DataFrame(columns=['ActionGuid', 'Page', 'ActionName'])
 
-        for _d in self.data['ActionId']:
-            matched_data = self.action_page_data.loc[self.action_page_data['ActionGuid'].values == _d].iloc[0]
-            if len(merged_data['ActionGuid']) == 0 or matched_data['ActionGuid'] not in merged_data['ActionGuid'].values:
-                df_matched_data = pd.DataFrame([matched_data], columns=['ActionGuid', 'Page', 'ActionName'])
+        # update matched data for each row
+        for action_id, next_id in zip(self.data['ActionId'],self.data['Next']):
+            # looking up the relevant action for reference data source
+            matched_action_data = self.action_page_data.loc[self.action_page_data['ActionGuid'].values == action_id].iloc[0]
+            action_id_page.append(self.action_page_data.loc[self.action_page_data['ActionGuid'].values == action_id].iloc[0]['Page'])
+            action_id_name.append(self.action_page_data.loc[self.action_page_data['ActionGuid'].values == action_id].iloc[0][
+                'ActionName'])
+            next_action_page.append(self.action_page_data.loc[self.action_page_data['ActionGuid'].values == next_id].iloc[0][
+                'Page'])
+            next_action_name.append(self.action_page_data.loc[self.action_page_data['ActionGuid'].values == next_id].iloc[0][
+                'ActionName'])
+
+            if len(merged_data['ActionGuid']) == 0 or matched_action_data['ActionGuid'] not in merged_data['ActionGuid'].values:
+                df_matched_data = pd.DataFrame([matched_action_data], columns=['ActionGuid', 'Page', 'ActionName'])
                 merged_data = pd.concat([merged_data,df_matched_data], ignore_index=True)
 
+        self.data['ActionIdPage'] = action_id_page
+        self.data['ActionIdName'] = action_id_name
+        self.data['NextPage'] = next_action_page
+        self.data['NextActionName'] = next_action_name
 
+        # reordering of columns
+        self.data = self.data.loc[:, ["ActionId", "ActionIdPage", "ActionIdName", "Next", "NextPage", "NextActionName", "distance", "rating"]]
 
-
-
-
-
+        print('')
 
 
     def get_page_by_action_id(self, action_id):
