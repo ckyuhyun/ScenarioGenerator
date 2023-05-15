@@ -35,7 +35,7 @@ class ClassificationGraphy:
         self.generate_relation_coordinate()
         # self.base_node = self.coordinates.keys()[0]
 
-    def Run(self, center_point, neighbour_points, next_point):
+    def Run(self, center_point, center_node_label, neighbour_points):
 
         # first start
         _key = center_point
@@ -50,6 +50,7 @@ class ClassificationGraphy:
         # Drawing
         self.draw(center_x,
                   center_y,
+                  center_node_label,
                   np.array(coordinate)[:, :1],
                   np.array(coordinate)[:, 1:2],
                   self._x_label,
@@ -64,10 +65,10 @@ class ClassificationGraphy:
         # except IndexError as e:
         #     print("Error - {0} : {1} - {2}".format(str(e), random_index, len(coordinate)))
 
-    def draw(self, center_x, center_y, x_coorindates, y_coordinates, x_label, y_label):
+    def draw(self, center_x, center_y, center_node_label, x_coorindates, y_coordinates, x_label, y_label):
         plt.clf()
         plt.scatter(x_coorindates, y_coordinates, alpha=0.3)
-        plt.text(center_x, center_y, "Base Action")
+        plt.text(center_x, center_y, center_node_label)
 
         for x, y in zip(x_coorindates, y_coordinates):
             plt.plot(np.array([center_x, x[0]]), np.array([center_y, y[0]]))
