@@ -14,8 +14,6 @@ def run():
     model.get_seed_data(knn_seed_data)
     model.Run()
 
-
-
     graphy = ClassificationGraphy.ClassificationGraphy(data=_data[['ActionId', 'Next']],
                                                        x_label="Current Action",
                                                        y_label="Next Action")
