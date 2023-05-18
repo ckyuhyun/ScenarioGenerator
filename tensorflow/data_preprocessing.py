@@ -202,13 +202,19 @@ class data_preprocessing:
         return self.__df_action_id_category.loc[self.__df_action_id_category['Action_Id_Category_label'] == action_id_label].iloc[0]['Action_Id_Category']
 
     def get_next_action(self, current_action_id):
+        neighbour_nodes = []
+
         _labelled_neighbour_nodes = self.__action_distance_data.loc[self.__action_distance_data['ActionId'] == current_action_id]['Next']
 
-        neighbour_nodes = []
+        if len(_labelled_neighbour_nodes) == 0:
+            return -1, neighbour_nodes
+
         for _n_nodes in _labelled_neighbour_nodes:
             neighbour_nodes.append(_n_nodes)
-
-        return random.choice(list(neighbour_nodes)), neighbour_nodes
+        try:
+            return random.choice(list(neighbour_nodes)), neighbour_nodes
+        except Exception as e:
+            raise Exception(f"No Action Id category label {str(e)}, {str(len(neighbour_nodes))}")
 
     def get_current_neighbor_nodes(self, current_action_id):
         _labelled_neighbour_nodes = self.__action_distance_data.loc[self.__action_distance_data['ActionId'] == current_action_id]['Next']

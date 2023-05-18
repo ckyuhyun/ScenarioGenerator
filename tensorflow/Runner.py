@@ -23,6 +23,11 @@ def run():
 
     while True:
         next_action_id, next_action_neighbour_nodes = _data_preprocessing.get_next_action(action_id)
+
+        if len(next_action_neighbour_nodes) == 0:
+            print('Auto Scenario generator is suspended')
+            break
+
         current_action_page = _data_preprocessing.get_page_by_action_id(action_id)
         next_action_page = _data_preprocessing.get_page_by_action_id(action_id)
 
