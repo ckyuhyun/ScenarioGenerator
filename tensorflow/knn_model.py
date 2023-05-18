@@ -27,11 +27,20 @@ class KNN_model:
         predicted_matrix = autoencoder.predict(test_data)
         print('predict value : {0}'.format(predicted_matrix))
         '''
-        knn = KNeighborsClassifier(n_neighbors=5)
+        score_by_n_neighbors = {}
+        for n_n in range(1, 20):
+            knn = KNeighborsClassifier(n_neighbors=n_n)
 
-        knn.fit(x_train_data, y_train_data)
-        score = knn.score(x_test_data, y_test_data)
-        print('score : {0}'.format(score))
+            knn.fit(x_train_data, y_train_data)
+            score = knn.score(x_test_data, y_test_data)
+            score_by_n_neighbors[n_n] = score
+
+        for k,v in sorted(score_by_n_neighbors.items(), key=lambda d: d[1], reverse=True):
+            print(f'{k} => {v}')
+
+
+
+
 
 
 

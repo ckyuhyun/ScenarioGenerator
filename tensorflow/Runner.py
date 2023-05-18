@@ -31,7 +31,6 @@ def run():
         current_action_page = _data_preprocessing.get_page_by_action_id(action_id)
         next_action_page = _data_preprocessing.get_page_by_action_id(action_id)
 
-
         class_graphy.Run(action_id, current_action_page, neighbour_nodes)
 
         # update current action id and neighbour nodes
