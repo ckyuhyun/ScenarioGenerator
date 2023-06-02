@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 from sklearn.preprocessing import LabelEncoder
+from helper.data_label import Data_labelling
 import logging
 
 
@@ -31,6 +32,7 @@ class data_preprocessing:
         # Feature label
         self.__df_action_id_category = []
         self.__df_action_page_category = []
+
 
     def get_src_data(self):
         return self.__action_distance_data
@@ -113,8 +115,10 @@ class data_preprocessing:
         # Generate label for current page and next action
         le = LabelEncoder()
         df_page_collection = pd.DataFrame(data=self.__unique_action_page_collections, columns=["Page"])
-        action_page_label = le.fit_transform(self.__unique_action_page_collections)
-        df_page_collection["Page_Label"] = pd.DataFrame(data=action_page_label)
+        #action_page_label = le.fit_transform(self.__unique_action_page_collections)
+        #df_page_collection["Page_Label"] = pd.DataFrame(data=action_page_label)
+
+        df_page_collection = Data_labelling.get_data_with_label(df_page_collection)
 
         # Generate a new column with rows for page label matching with a page name
         action_id_page_label_column = []

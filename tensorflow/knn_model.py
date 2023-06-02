@@ -2,6 +2,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from tensorflow import keras
 from sklearn.neighbors import KNeighborsClassifier
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 class KNN_model:
     def __init__(self):
@@ -12,9 +15,24 @@ class KNN_model:
         self.seed_data = data
 
     def Run(self):
-        X = self.seed_data[['Action_id_label', 'ActionIdPageLabel', 'ActionName_Label','distance', 'rating']]
+        corr = self.seed_data.corr(method="pearson")
+
+        # zero_like gives a zero numpy array similar to what is passed as first argument
+        # np.triu_indices_from gives the upper triangle indices (read triangle-upper-indices)
+        mask = np.zeros_like(corr)
+        mask[np.triu_indices_from(mask)] = True
+
+        # Colors
+        cmap = sns.diverging_palette(240, 10, as_cmap=True)
+        # Plotting the heatmap
+
+        sns.heatmap(corr, mask=mask, linewidths=.5, cmap=cmap, center=0)
+        plt.show()
+
+        X = self.seed_data[['Action_id_label', 'ActionIdPageLabel', 'distance', 'rating']]
         Y = self.seed_data[['Next_id_label']]
         x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42)
+
 
         '''
         input_tensor = keras.Input(shape=train_data.shape[1],)
