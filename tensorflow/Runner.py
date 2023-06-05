@@ -1,15 +1,22 @@
+import pandas as pd
+
 from Tools.GraphLibrary import ClassificationGraphy
 from numpy.core.defchararray import strip
 from data_preprocessing import data_preprocessing
 from knn_model import KNN_model
 
+
+
 def run():
+    read_data = pd.read_csv('../extended_action_data.csv', index_col=0)
+
+    #df = dl.get_data_with_label(['TestActionGuid'])
     preprocessing = data_preprocessing()
     model = KNN_model()
-    _data_preprocessing = preprocessing
-    _data_preprocessing.init()
-    _data = _data_preprocessing.get_src_data()
-    knn_seed_data = _data_preprocessing.get_compiled_data()
+    #_data_preprocessing = preprocessing
+    #_data_preprocessing.init()
+    #_data = _data_preprocessing.get_src_data()
+    knn_seed_data = dropped_df #_data_preprocessing.get_compiled_data()
 
     model.get_seed_data(knn_seed_data)
     model.Run()

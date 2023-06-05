@@ -29,7 +29,7 @@ class KNN_model:
         sns.heatmap(corr, mask=mask, linewidths=.5, cmap=cmap, center=0)
         plt.show()
 
-        X = self.seed_data[['Action_id_label', 'ActionIdPageLabel', 'distance', 'rating']]
+        X = self.seed_data.drop([''])
         Y = self.seed_data[['Next_id_label']]
         x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42)
 
