@@ -11,12 +11,12 @@ def run():
     read_data = pd.read_csv('../extended_action_data.csv', index_col=0)
 
     #df = dl.get_data_with_label(['TestActionGuid'])
-    preprocessing = data_preprocessing()
+    preprocessing = data_preprocessing(read_data)
     model = KNN_model()
     #_data_preprocessing = preprocessing
     #_data_preprocessing.init()
     #_data = _data_preprocessing.get_src_data()
-    knn_seed_data = dropped_df #_data_preprocessing.get_compiled_data()
+    knn_seed_data = preprocessing.get_model_seed_data()
 
     model.get_seed_data(knn_seed_data)
     model.Run()
@@ -25,8 +25,8 @@ def run():
                                                        x_label="Current Action",
                                                        y_label="Next Action")
     class_graphy = graphy
-    action_id = _data_preprocessing.get_start_entry()
-    neighbour_nodes = _data_preprocessing.get_current_neighbor_nodes(action_id)
+    action_id = preprocessing.get_start_entry()
+    neighbour_nodes = preprocessing.get_current_neighbor_nodes(action_id)
 
     while True:
         next_action_id, next_action_neighbour_nodes = _data_preprocessing.get_next_action(action_id)
