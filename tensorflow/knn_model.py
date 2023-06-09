@@ -5,13 +5,25 @@ from sklearn.neighbors import KNeighborsClassifier
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 class KNN_model:
     def __init__(self):
         self.seed_data = None
         self.__encoding_dim = 32
+        self.__target_column = 'NextActionGuid_label'
 
     def get_seed_data(self, data):
+        # corr = data.corr(method="pearson")
+        #
+        # mask = np.zeros_like(corr)
+        # mask[np.triu_indices_from(mask)] = True
+        #
+        # # Colors
+        # cmap = sns.diverging_palette(240, 10, as_cmap=True)
+        # # Plotting the heatmap
+        #
+        # sns.heatmap(corr, mask=mask, linewidths=.5, cmap=cmap, center=0)
+        # plt.show()
+
         self.seed_data = data
 
     def Run(self):
@@ -19,19 +31,25 @@ class KNN_model:
 
         # zero_like gives a zero numpy array similar to what is passed as first argument
         # np.triu_indices_from gives the upper triangle indices (read triangle-upper-indices)
-        mask = np.zeros_like(corr)
-        mask[np.triu_indices_from(mask)] = True
 
-        # Colors
-        cmap = sns.diverging_palette(240, 10, as_cmap=True)
-        # Plotting the heatmap
 
-        sns.heatmap(corr, mask=mask, linewidths=.5, cmap=cmap, center=0)
-        plt.show()
+        # mask = np.zeros_like(corr)
+        # mask[np.triu_indices_from(mask)] = True
+        #
+        # # Colors.
+        # cmap = sns.diverging_palette(240, 10, as_cmap=True)
+        # # Plotting the heatmap
+        #
+        # sns.heatmap(corr, mask=mask, linewidths=.5, cmap=cmap, center=0)
+        # plt.show()
+        #
 
-        X = self.seed_data.drop([''])
-        Y = self.seed_data[['Next_id_label']]
+        _result = self.seed_data.isna()
+        X = self.seed_data.drop([self.__target_column], axis=1)
+        Y = self.seed_data[[self.__target_column]]
         x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42)
+
+
 
 
         '''
@@ -47,7 +65,7 @@ class KNN_model:
         print('predict value : {0}'.format(predicted_matrix))
         '''
         score_by_n_neighbors = {}
-        '''
+
         for n_n in range(1, 20):
             knn = KNeighborsClassifier(n_neighbors=n_n)
 
@@ -57,18 +75,19 @@ class KNN_model:
 
         for k,v in sorted(score_by_n_neighbors.items(), key=lambda d: d[1], reverse=True):
             print(f'n_neighbors : {k} (score : {v})')
-        '''
-        knn = KNeighborsClassifier()
-        param_grid = {'n_neighbors': np.arange(1, 100)}
-        knn_cv = GridSearchCV(knn, param_grid, cv=5)
-        knn_cv.fit(x_train_data, np.ravel(y_train_data))
-        print(f'Best Param : {knn_cv.best_params_}')
-        print(f'Best score : {knn_cv.best_score_}')
-
-        knn = KNeighborsClassifier(n_neighbors=23)
-        knn.fit(x_train_data, np.ravel(y_train_data))
-        y_predict = knn.predict(x_test_data)
-        print(f'Predict : {y_predict}')
+        #
+        # knn = KNeighborsClassifier()
+        # param_grid = {'n_neighbors': np.arange(1, 100)}
+        # knn_cv = GridSearchCV(knn, param_grid, cv=5)
+        # knn_cv.fit(x_train_data, np.ravel(y_train_data))
+        # print(f'Best Param : {knn_cv.best_params_}')
+        # print(f'Best score : {knn_cv.best_score_}')
+        #
+        # knn = KNeighborsClassifier(n_neighbors=23)
+        # knn.fit(x_train_data, np.ravel(y_train_data))
+        # y_predict = knn.predict(x_test_data)
+        # print(f'Predict : {y_predict}')
+        print('')
 
 
 
