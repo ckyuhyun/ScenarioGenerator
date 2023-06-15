@@ -3,6 +3,8 @@ import random
 from sklearn.preprocessing import LabelEncoder
 from helper.data_label import Data_labelling
 import logging
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 
@@ -11,14 +13,18 @@ class data_preprocessing:
         pd.set_option("display.max_columns", None)
         self.seed_data = seed_data.drop(['ActionRunStatus'], axis=1)
         self.seed_data_columns = self.seed_data.columns
-        self.model_data_columns = ['TestScenarioGuid', 'CurrentActionGuid', 'PrevActionGuid', 'NextActionGuid', 'CategoryGuid', 'ActionMethodType']
-        self.label_columns = ['TestScenarioGuid', 'CurrentActionGuid', 'PrevActionGuid', 'NextActionGuid', 'CategoryGuid']
+        self.model_data_columns = ['TestScenarioGuid', 'CurrentActionGuid','CategoryGuid', 'ActionMethodType', 'PrevActionGuid', 'PreviousActionCategoryGuid', 'NextActionGuid','NextActionCategoryGuid' ]
+        self.label_columns = ['TestScenarioGuid', 'CurrentActionGuid', 'PrevActionGuid','NextActionGuid', 'CategoryGuid', 'PreviousActionCategoryGuid','NextActionCategoryGuid']
         self.model_seed_data = pd.DataFrame(columns=self.model_data_columns)
 
         self.__data_group()
         self.__post_processing_with_label()
+        self.model_seed_data.to_csv('model_seed_data.csv')
 
     def get_model_seed_data(self):
+        if self.model_seed_data.isna().sum().sum() != 0:
+            raise Exception("There is empty(null) data")
+
         return self.model_seed_data
 
     def get_start_entry(self):
@@ -38,27 +44,39 @@ class data_preprocessing:
                 current_action_stack_index = val['stackIndex'].values[0]
 
                 # get guid of a previous and next action of the current action
-                prev_action_guid = _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index - 1)]['TestActionGuid'].iloc[0] if current_action_stack_index > 0 else ''
+                try:
+                    prev_action_guid = _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index - 1)]['TestActionGuid'].iloc[0] if current_action_stack_index > 0 else None
+                    prev_action_category_guid = _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index - 1)]['CategoryGuid'].iloc[0] if current_action_stack_index > 0 else None
+                except Exception as e:
+                    raise Exception(f"Action Guid : {val['TestActionGuid'].values[0]}")
 
                 try:
-                    next_action_guid = '' if current_action_stack_index >= (value_length - 1) else _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index + 1)]['TestActionGuid'].iloc[0]
+                    next_action_guid = None if current_action_stack_index >= (value_length - 1) else _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index + 1)]['TestActionGuid'].iloc[0]
+                    next_action_category_guid = None if current_action_stack_index >= (value_length - 1) else _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index + 1)]['CategoryGuid'].iloc[0]
                 except Exception as e:
                     raise Exception(f"Action Guid : {val['TestActionGuid'].values[0]}")
 
                 # Having a new data in dataframe
                 new_row_data = pd.DataFrame({'TestScenarioGuid': val['TestScenarioGuid'].values[0],
                                              'CurrentActionGuid': val['TestActionGuid'].values[0],
-                                             'PrevActionGuid': prev_action_guid,
-                                             'NextActionGuid': next_action_guid,
                                              'CategoryGuid': val['CategoryGuid'].values[0],
+                                             'ActionMethodType': val['ActionMethodType'].values[0],
+                                             'PrevActionGuid':  val['TestActionGuid'].values[0] if prev_action_guid is None else prev_action_guid,
+                                             'PreviousActionCategoryGuid': val['TestActionGuid'].values[0] if prev_action_category_guid is None else prev_action_category_guid,
+                                             'NextActionGuid': val['TestActionGuid'].values[0] if next_action_guid is None else next_action_guid,
+                                             'NextActionCategoryGuid': val['TestActionGuid'].values[0] if next_action_category_guid is None else next_action_category_guid,
                                              #'ActionRunStatus': val['ActionRunStatus'].values[0],
-                                             'ActionMethodType': val['ActionMethodType'].values[0]
                                              }, index=[0])
+
                 self.model_seed_data = pd.concat([self.model_seed_data, new_row_data], ignore_index=True)
 
     def __post_processing_with_label(self):
         dl = Data_labelling(self.model_seed_data)
-        df = dl.get_data_with_label(columns=self.label_columns)
+
+        dl.get_group_label(group_columns=['TestScenarioGuid'])
+        dl.get_group_label(group_columns=['CurrentActionGuid', 'PrevActionGuid', 'NextActionGuid'])
+        dl.get_group_label(group_columns=['CategoryGuid', 'PreviousActionCategoryGuid', 'NextActionCategoryGuid'])
+        df = dl.get_data()
 
         # dropping columns having their label column
         self.model_seed_data = df.drop(columns=self.label_columns, axis=1)
