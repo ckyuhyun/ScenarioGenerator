@@ -56,7 +56,8 @@ class KNN_model:
         _result = self.seed_data.isna()
         X = np.array(self.seed_data.drop([self.__target_column], axis=1))
         Y = np.array(self.seed_data[self.__target_column])
-        x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42)
+        print(self.seed_data[self.__target_column].value_counts())
+        x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42, stratify=Y)
 
         '''
         input_tensor = keras.Input(shape=train_data.shape[1],)
@@ -70,8 +71,8 @@ class KNN_model:
         predicted_matrix = autoencoder.predict(test_data)
         print('predict value : {0}'.format(predicted_matrix))
         '''
-        # score_by_n_neighbors = {}
-        #
+        score_by_n_neighbors = {}
+
         # for n_n in range(1, 20):
         #     knn = KNeighborsClassifier(n_neighbors=n_n)
         #
@@ -84,14 +85,14 @@ class KNN_model:
 
 
 
-        # knn = KNeighborsClassifier()
-        # param_grid = {'n_neighbors': np.arange(1, 100)}
-        # knn_cv = GridSearchCV(knn, param_grid, cv=5)
-        # knn_cv.fit(x_train_data, np.ravel(y_train_data))
-        # print(f'Best Param : {knn_cv.best_params_}')
-        # print(f'Best score : {knn_cv.best_score_}')
+        knn = KNeighborsClassifier()
+        param_grid = {'n_neighbors': np.arange(1, 100)}
+        knn_cv = GridSearchCV(knn, param_grid, cv=5)
+        knn_cv.fit(x_train_data, np.ravel(y_train_data))
+        print(f'Best Param : {knn_cv.best_params_}')
+        print(f'Best score : {knn_cv.best_score_}')
 
-        knn = KNeighborsClassifier(n_neighbors=2)
+        knn = KNeighborsClassifier(n_neighbors=1)
         knn.fit(x_train_data, np.ravel(y_train_data))
         y_predict = knn.predict(x_test_data)
         print(f'Predict : {y_predict}')

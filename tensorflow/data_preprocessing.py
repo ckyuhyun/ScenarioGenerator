@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from sklearn.preprocessing import LabelEncoder
-from helper.data_label import Data_labelling
+from helper.data_label import Data_label
 import logging
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -11,14 +11,19 @@ import matplotlib.pyplot as plt
 class data_preprocessing:
     def __init__(self, seed_data: pd.DataFrame):
         pd.set_option("display.max_columns", None)
+
+        # Data preprocessing
         self.seed_data = seed_data.drop(['ActionRunStatus'], axis=1)
         self.seed_data_columns = self.seed_data.columns
         self.model_data_columns = ['TestScenarioGuid', 'CurrentActionGuid','CategoryGuid', 'ActionMethodType', 'PrevActionGuid', 'PreviousActionCategoryGuid', 'NextActionGuid','NextActionCategoryGuid' ]
         self.label_columns = ['TestScenarioGuid', 'CurrentActionGuid', 'PrevActionGuid','NextActionGuid', 'CategoryGuid', 'PreviousActionCategoryGuid','NextActionCategoryGuid']
         self.model_seed_data = pd.DataFrame(columns=self.model_data_columns)
-
         self.__data_group()
+
+        # labeling
+        self.dl = Data_label(self.model_seed_data)
         self.__post_processing_with_label()
+
         self.model_seed_data.to_csv('model_seed_data.csv')
 
     def get_model_seed_data(self):
@@ -71,12 +76,20 @@ class data_preprocessing:
                 self.model_seed_data = pd.concat([self.model_seed_data, new_row_data], ignore_index=True)
 
     def __post_processing_with_label(self):
-        dl = Data_labelling(self.model_seed_data)
+        """
+        Generate labels for column value
+        :return:
+        """
+        # labels for Test scenario
+        self.dl.add_group_label_column(group_columns=['TestScenarioGuid'], label_group_name="TestScenarioLabel")
+        # labels for Action
+        self.dl.add_group_label_column(group_columns=['CurrentActionGuid', 'PrevActionGuid', 'NextActionGuid'], label_group_name="ActionLabel")
+        # labels for Category
+        self.dl.add_group_label_column(group_columns=['CategoryGuid', 'PreviousActionCategoryGuid', 'NextActionCategoryGuid'], label_group_name="CategoryLabel")
+        df = self.dl.get_data()
 
-        dl.get_group_label(group_columns=['TestScenarioGuid'])
-        dl.get_group_label(group_columns=['CurrentActionGuid', 'PrevActionGuid', 'NextActionGuid'])
-        dl.get_group_label(group_columns=['CategoryGuid', 'PreviousActionCategoryGuid', 'NextActionCategoryGuid'])
-        df = dl.get_data()
+        #debug_value1 = self.dl.get_value_of_label(label_group_name="ActionLabel", search_label=44)
+        #debug_value2 = self.dl.get_value_of_label(label_group_name="ActionLabel", search_label=39)
 
         # dropping columns having their label column
         self.model_seed_data = df.drop(columns=self.label_columns, axis=1)
