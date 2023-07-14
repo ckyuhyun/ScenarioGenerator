@@ -35,6 +35,10 @@ class data_preprocessing:
     def get_start_entry(self):
         pass
 
+    def get_original_value_by_label(self, label_group_name, label):
+        return self.dl.get_value_of_label(label_group_name=label_group_name, search_label=label)
+
+
     def __data_group(self):
         _group_data = self.seed_data.sort_values(['stackIndex'], ascending=True).groupby('ScenarioHistryGuid')
 
@@ -88,8 +92,9 @@ class data_preprocessing:
         self.dl.add_group_label_column(group_columns=['CategoryGuid', 'PreviousActionCategoryGuid', 'NextActionCategoryGuid'], label_group_name="CategoryLabel")
         df = self.dl.get_data()
 
-        #debug_value1 = self.dl.get_value_of_label(label_group_name="ActionLabel", search_label=44)
-        #debug_value2 = self.dl.get_value_of_label(label_group_name="ActionLabel", search_label=39)
+
 
         # dropping columns having their label column
         self.model_seed_data = df.drop(columns=self.label_columns, axis=1)
+
+

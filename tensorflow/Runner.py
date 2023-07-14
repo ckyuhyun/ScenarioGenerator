@@ -19,7 +19,12 @@ def run():
     knn_seed_data = preprocessing.get_model_seed_data()
 
     model.get_seed_data(knn_seed_data)
-    model.Run()
+    predicted_action_label = model.Run()
+    predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label= predicted_action_label)
+    target_action_guid = preprocessing.get_action_guid_by_label(label_group_name="ActionLabel", label= 53)
+
+
+
 
     graphy = ClassificationGraphy.ClassificationGraphy(data=_data[['ActionId', 'Next']],
                                                        x_label="Current Action",

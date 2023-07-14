@@ -35,7 +35,7 @@ class KNN_model:
         self.seed_data = data
         self.seed_data.to_csv('seed_data.csv')
 
-    def Run(self):
+    def Run(self) -> int:
         corr = self.seed_data.corr(method="pearson")
 
         # zero_like gives a zero numpy array similar to what is passed as first argument
@@ -56,7 +56,7 @@ class KNN_model:
         _result = self.seed_data.isna()
         X = np.array(self.seed_data.drop([self.__target_column], axis=1))
         Y = np.array(self.seed_data[self.__target_column])
-        print(self.seed_data[self.__target_column].value_counts())
+        #print(self.seed_data[self.__target_column].value_counts())
         x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(X, Y, train_size=0.7, random_state=42, stratify=Y)
 
         '''
@@ -92,13 +92,19 @@ class KNN_model:
         print(f'Best Param : {knn_cv.best_params_}')
         print(f'Best score : {knn_cv.best_score_}')
 
-        knn = KNeighborsClassifier(n_neighbors=1)
+        knn = KNeighborsClassifier(n_neighbors=2)
         knn.fit(x_train_data, np.ravel(y_train_data))
         y_predict = knn.predict(x_test_data)
-        print(f'Predict : {y_predict}')
-        f1 = f1_score(y_test_data, y_predict,  average='weighted')
+        f1 = f1_score(y_test_data, y_predict, average='weighted')
         print(f'Test accuracy :{f1}')
         print('')
+
+        reshaped_x_test_data = np.reshape(x_test_data[0],(-1,x_test_data[0].size ))
+        y_predict = knn.predict(reshaped_x_test_data)
+        print(f'Predict : {y_predict}')
+
+
+        return y_predict[0]
 
 
 
