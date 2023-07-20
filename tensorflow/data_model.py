@@ -7,8 +7,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-
-class data_preprocessing:
+class data_model:
     def __init__(self, seed_data: pd.DataFrame):
         pd.set_option("display.max_columns", None)
 
@@ -37,6 +36,11 @@ class data_preprocessing:
 
     def get_original_value_by_label(self, label_group_name, label):
         return self.dl.get_value_of_label(label_group_name=label_group_name, search_label=label)
+
+    def get_current_action_data_by_label(self, label) -> list:
+        d = self.model_seed_data.loc[self.model_seed_data['CurrentActionGuid_label'] == label]\
+                                .drop(['NextActionGuid_label'], axis=1)
+        return d.values
 
 
     def __data_group(self):

@@ -34,7 +34,7 @@ class Data_label:
             self.seed_data[_column].apply(lambda x: _column_label_data.append(_unique_label_data.loc[_unique_label_data['data'] == x].iloc[0]['data_label']))
             self.seed_data[_column + '_label'] = _column_label_data
 
-    def get_value_of_label(self, label_group_name: str, search_label):
+    def     get_value_of_label(self, label_group_name: str, search_label):
         return self.label_collection[label_group_name].get(search_label)
 
 

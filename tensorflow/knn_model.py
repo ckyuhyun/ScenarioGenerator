@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -12,6 +14,7 @@ class KNN_model:
         self.seed_data = None
         self.__encoding_dim = 32
         self.__target_column = 'NextActionGuid_label'
+        self.model = KNeighborsClassifier(n_neighbors=5)
 
     def get_seed_data(self, data: pd.DataFrame):
         # corr = data.corr(method="pearson")
@@ -85,26 +88,29 @@ class KNN_model:
 
 
 
-        knn = KNeighborsClassifier()
+
         param_grid = {'n_neighbors': np.arange(1, 100)}
-        knn_cv = GridSearchCV(knn, param_grid, cv=5)
+        knn_cv = GridSearchCV(self.model, param_grid, cv=5)
         knn_cv.fit(x_train_data, np.ravel(y_train_data))
         print(f'Best Param : {knn_cv.best_params_}')
         print(f'Best score : {knn_cv.best_score_}')
 
-        knn = KNeighborsClassifier(n_neighbors=2)
-        knn.fit(x_train_data, np.ravel(y_train_data))
-        y_predict = knn.predict(x_test_data)
+
+        self.model.fit(x_train_data, np.ravel(y_train_data))
+        y_predict = self.model.predict(x_test_data)
         f1 = f1_score(y_test_data, y_predict, average='weighted')
         print(f'Test accuracy :{f1}')
         print('')
 
-        reshaped_x_test_data = np.reshape(x_test_data[0],(-1,x_test_data[0].size ))
-        y_predict = knn.predict(reshaped_x_test_data)
+    def predict(self, test_data):
+        # random_index = random.randint(0, len(x_test_data))
+        # reshaped_x_test_data = np.reshape(x_test_data[random_index], (-1, x_test_data[random_index].size))
+        y_predict = self.model.predict(test_data)
         print(f'Predict : {y_predict}')
 
+        # the second index is for a target action
+        return y_predict
 
-        return y_predict[0]
 
 
 

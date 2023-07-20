@@ -2,26 +2,40 @@ import pandas as pd
 
 from Tools.GraphLibrary import ClassificationGraphy
 from numpy.core.defchararray import strip
-from data_preprocessing import data_preprocessing
+from data_model import data_model
 from knn_model import KNN_model
-
+from helper.db_context_helper import dbContext_helper
 
 
 def run():
     read_data = pd.read_csv('../extended_action_data.csv', index_col=0)
 
     #df = dl.get_data_with_label(['TestActionGuid'])
-    preprocessing = data_preprocessing(read_data)
+    preprocessing = data_model(read_data)
     model = KNN_model()
+    db_context = dbContext_helper()
+
     #_data_preprocessing = preprocessing
     #_data_preprocessing.init()
     #_data = _data_preprocessing.get_src_data()
     knn_seed_data = preprocessing.get_model_seed_data()
-
     model.get_seed_data(knn_seed_data)
-    predicted_action_label = model.Run()
-    predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label= predicted_action_label)
-    target_action_guid = preprocessing.get_action_guid_by_label(label_group_name="ActionLabel", label= 53)
+    model.Run()
+
+    model_data = preprocessing.get_current_action_data_by_label(0)
+
+    predicted_data = model.predict(model_data)
+
+    for action in predicted_data:
+        predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label=action)
+        action_name = db_context.get_action_name_by_guid(project_id='0', guid=predicted_action_guid)
+        print(f'action name => {action_name}')
+
+
+    target_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label= target_action_label)
+
+    print(f'predicted action guid : {predicted_action_guid}')
+    print(f'target action guid : {target_action_guid}')
 
 
 
