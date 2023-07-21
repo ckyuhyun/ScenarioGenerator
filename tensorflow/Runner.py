@@ -10,20 +10,19 @@ from helper.db_context_helper import dbContext_helper
 
 
 def run():
-    read_data = pd.read_csv('../extended_action_data.csv', index_col=0)
-
-    #df = dl.get_data_with_label(['TestActionGuid'])
-    data_handler = data_model(read_data)
     model = KNN_model()
     db_context = dbContext_helper()
 
-    #_data_preprocessing = data_handler
-    #_data_preprocessing.init()
-    #_data = _data_preprocessing.get_src_data()
+    # get data
+    read_data = pd.read_csv('../extended_action_data.csv', index_col=0)
+    data_handler = data_model(read_data)
+
+    # train a knn model
     knn_seed_data = data_handler.get_model_seed_data()
     model.get_seed_data(knn_seed_data)
     model.Run()
 
+    # find an action where it starts with
     action_guids = data_handler.get_action_guids_by_stack_index(0, unique_data_retured=True)
     random_action_guid = random.choice(action_guids)
     current_action_guid_label = data_handler.get_action_guid_label_by_action_guid(random_action_guid)
