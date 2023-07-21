@@ -106,7 +106,7 @@ class KNN_model:
         # random_index = random.randint(0, len(x_test_data))
         # reshaped_x_test_data = np.reshape(x_test_data[random_index], (-1, x_test_data[random_index].size))
         y_predict = self.model.predict(test_data)
-        print(f'Predict : {y_predict}')
+        #print(f'Predict : {y_predict}')
 
         # the second index is for a target action
         return y_predict

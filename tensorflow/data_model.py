@@ -42,6 +42,41 @@ class data_model:
                                 .drop(['NextActionGuid_label'], axis=1)
         return d.values
 
+    def get_action_guids_by_stack_index(self, stack_index, unique_data_retured=False):
+        """
+        return action guids of a specific stack index
+        :param stack_index:
+        :return:
+        """
+        action_guids = self.get_action_guid_by_stack_index(stack_index)
+        if unique_data_retured:
+            unique_list = []
+            for d in action_guids:
+                if d not in unique_list:
+                    unique_list.append(d)
+            return unique_list
+        else:
+            return action_guids
+
+    def get_action_guid_label_by_action_guid(self, action_guid: str):
+        """
+        return a label of an action guid
+        :param action_guid:
+        :return:
+        """
+        return self.dl.get_label_of_value('ActionLabel', action_guid)
+
+
+    def get_action_guid_by_stack_index(self, stack_index) -> list:
+        """
+        Collect guid of actions with a specific stack index
+        :param stack_index:
+        :return: list of action guid
+        """
+        actions_guid = self.seed_data.loc[self.seed_data['stackIndex'] == stack_index]['TestActionGuid']
+        return actions_guid.values
+
+
 
     def __data_group(self):
         _group_data = self.seed_data.sort_values(['stackIndex'], ascending=True).groupby('ScenarioHistryGuid')
