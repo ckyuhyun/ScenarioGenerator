@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 
 from Tools.GraphLibrary import ClassificationGraphy
@@ -22,21 +24,34 @@ def run():
     model.get_seed_data(knn_seed_data)
     model.Run()
 
-    model_data = preprocessing.get_current_action_data_by_label(0)
+    current_action_guid_label = 1
 
-    predicted_data = model.predict(model_data)
-
-    for action in predicted_data:
-        predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label=action)
+    while True:
+        model_data = preprocessing.get_current_action_data_by_label(current_action_guid_label)
+        predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label=current_action_guid_label)
         action_name = db_context.get_action_name_by_guid(project_id='0', guid=predicted_action_guid)
-        print(f'action name => {action_name}')
 
+        predicted_data = model.predict(model_data)
 
-    target_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label= target_action_label)
+        # for action in predicted_data:
+        #     predicted_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label=action)
+        #     action_name = db_context.get_action_name_by_guid(project_id='0', guid=predicted_action_guid)
+        #     print(f'action name => {action_name}')
 
-    print(f'predicted action guid : {predicted_action_guid}')
-    print(f'target action guid : {target_action_guid}')
+        target_action_labels = [a for a in predicted_data if a != current_action_guid_label]
+        target_action_label = random.choice(target_action_labels)
+        target_action_guid = preprocessing.get_original_value_by_label(label_group_name="ActionLabel", label= target_action_label)
 
+        current_action_name = db_context.get_action_name_by_guid(project_id='0', guid=predicted_action_guid)
+        next_action_name = db_context.get_action_name_by_guid(project_id='0', guid=target_action_guid)
+
+        print(f'current action : {current_action_name}')
+        print(f'next action : {next_action_name}')
+
+        if current_action_guid_label == target_action_label:
+            break
+
+        current_action_guid_label = target_action_label
 
 
 
