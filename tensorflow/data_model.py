@@ -79,28 +79,31 @@ class data_model:
 
 
     def __data_group(self):
-        _group_data = self.seed_data.sort_values(['stackIndex'], ascending=True).groupby('ScenarioHistryGuid')
+        _group_data = self.seed_data.sort_values(['ActionStartDate'], ascending=True).groupby('ScenarioHistoryGuid')
 
-        column_num = len(self.seed_data.columns)
-
+        # The gk indicates each key of group
         for gk in list(_group_data.groups.keys()):
+            # get a size of a grouping value
             value_length = len(_group_data.get_group(gk).values)
-            for v in _group_data.get_group(gk).values:
+            _group_value = _group_data.get_group(gk)
+            _group_value['sequential_index'] = range(0, len(_group_value))
+
+            for v in _group_value.values:
                 # get a value of a current action
-                val = pd.DataFrame(data=v.reshape((1, column_num)), columns=self.seed_data_columns)
+                val = pd.DataFrame(data=v.reshape((1, len(_group_value.columns))), columns=_group_value.columns)
                 # get a stack index of a current action in a current scenario
-                current_action_stack_index = val['stackIndex'].values[0]
+                current_action_stack_index = val['sequential_index'].values[0]
 
                 # get guid of a previous and next action of the current action
                 try:
-                    prev_action_guid = _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index - 1)]['TestActionGuid'].iloc[0] if current_action_stack_index > 0 else None
-                    prev_action_category_guid = _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index - 1)]['CategoryGuid'].iloc[0] if current_action_stack_index > 0 else None
+                    prev_action_guid = _group_value.loc[lambda x: x['sequential_index'] == (current_action_stack_index - 1)]['TestActionGuid'].iloc[0] if current_action_stack_index > 0 else None
+                    prev_action_category_guid = _group_value.loc[lambda x: x['sequential_index'] == (current_action_stack_index - 1)]['CategoryGuid'].iloc[0] if current_action_stack_index > 0 else None
                 except Exception as e:
                     raise Exception(f"Action Guid : {val['TestActionGuid'].values[0]}")
 
                 try:
-                    next_action_guid = None if current_action_stack_index >= (value_length - 1) else _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index + 1)]['TestActionGuid'].iloc[0]
-                    next_action_category_guid = None if current_action_stack_index >= (value_length - 1) else _group_data.get_group(gk).loc[lambda x: x['stackIndex'] == (current_action_stack_index + 1)]['CategoryGuid'].iloc[0]
+                    next_action_guid = None if current_action_stack_index >= (value_length - 1) else _group_value.loc[lambda x: x['sequential_index'] == (current_action_stack_index + 1)]['TestActionGuid'].iloc[0]
+                    next_action_category_guid = None if current_action_stack_index >= (value_length - 1) else _group_value.loc[lambda x: x['sequential_index'] == (current_action_stack_index + 1)]['CategoryGuid'].iloc[0]
                 except Exception as e:
                     raise Exception(f"Action Guid : {val['TestActionGuid'].values[0]}")
 
