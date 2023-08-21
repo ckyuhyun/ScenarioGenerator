@@ -5,12 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-'''
-This class draws circles representing a node and a classification where has nodes.
-'''
-
 
 class ClassificationGraphy:
+    """
+    This class draws circles representing a node and a classification where has nodes.
+    """
     def __init__(self, data: pd.DataFrame, x_label, y_label):
         """
         :param data:

@@ -1,4 +1,5 @@
 
 .idea/vcs.xml
-
+*.iml
+*.xml
 *.pyc

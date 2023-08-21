@@ -2,6 +2,8 @@ import pyodbc
 import pandas as pd
 from csv import reader
 import warnings
+import global_instance
+
 
 class dbContext:
     # Some other example server values are
@@ -13,13 +15,7 @@ class dbContext:
     username = 'plexusadmin'
     password = 'D6mE_uqu'
     '''
-    '''
-    def __init__(self, server, database, username, password) -> None:
-        self.server = server
-        self.database = database
-        self.username = username
-        self.password = password
-    '''
+
 
     def __init__(self):
         self.table_values = None
@@ -27,14 +23,18 @@ class dbContext:
         self.connection = None
 
     def connect(self):
-        # Trusted Connection to Named Instance
-        self.connection = pyodbc.connect(
-            r"DRIVER={SQL Server};"
-            r'SERVER=APP-TC-L04;'
-            r'DATABASE=AutoTesterDB;'
-            r'Trusted_Connection=yes;'
-        )
-        self.cursor = self.connection.cursor()
+
+        try:
+            # Trusted Connection to Named Instance
+            self.connection = pyodbc.connect(
+                r"DRIVER={SQL Server};"
+                fr'SERVER={global_instance.database_context.server_domain};'
+                fr'DATABASE={global_instance.database_context.database_name};'
+                fr'Trusted_Connection={global_instance.database_context.trusted_connect};'
+            )
+            self.cursor = self.connection.cursor()
+        except:
+            print("not connected?")
 
     def select(self,
                table_name,

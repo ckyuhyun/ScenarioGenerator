@@ -7,9 +7,12 @@ from numpy.core.defchararray import strip
 from data_model import data_model
 from knn_model import KNN_model
 from helper.db_context_helper import dbContext_helper
-
+from Utils.read_yaml_file import  read_yaml
+import global_instance
 
 def run():
+
+
     model = KNN_model()
     db_context = dbContext_helper()
 
@@ -70,7 +73,7 @@ def run():
 
         if len(next_action_neighbour_nodes) == 0:
             print('Auto Scenario generator is suspended')
-            break
+            break  
 
         current_action_page = _data_preprocessing.get_page_by_action_id(action_id)
         next_action_page = _data_preprocessing.get_page_by_action_id(action_id)
